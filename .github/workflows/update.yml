@@ -1,0 +1,37 @@
+# Rebuilds almanac.json from FF14 Fish Tracker, FFXIV Teamcraft, SudachiDict and Unihan, and commits it only when the
+# data changed. Eorzea Weather downloads almanac.json from this repository (raw.githubusercontent.com).
+name: update-almanac
+on:
+  schedule:
+    - cron: '0 18 * * 1'   # every Tuesday 03:00 JST
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install sudachipy sudachidict_full
+      - run: sh tools/fetch.sh
+      - run: cp almanac.json "$RUNNER_TEMP/old.json"
+      - run: node tools/build.js && python tools/readings.py
+        env:
+          ALMANAC_OUT: ${{ github.workspace }}
+      - name: Commit when the data changed
+        run: |
+          if python tools/same.py "$RUNNER_TEMP/old.json" almanac.json; then
+            echo "no change"; git checkout -- almanac.json THIRD-PARTY-almanac.txt
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add almanac.json THIRD-PARTY-almanac.txt
+            git commit -m "Update almanac data"
+            git push
+          fi
