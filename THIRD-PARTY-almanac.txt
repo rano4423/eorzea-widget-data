@@ -1,4 +1,4 @@
-ギャザクラ図鑑のデータは次のプロジェクトのデータから作っています。
+ギャザラー図鑑のデータは次のプロジェクトのデータから作っています。
 The almanac data is derived from the following projects.
 
 === FF14 Fish Tracker (https://github.com/icykoneko/ff14-fish-tracker-app) ===

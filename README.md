@@ -1,6 +1,6 @@
 # Eorzea Weather 図鑑データ
 
-Eorzea Weather のギャザクラ図鑑が、起動時にここから最新の `almanac.json` を取得します（設定でオフにできます）。
+Eorzea Weather のギャザラー図鑑が、起動時にここから最新の `almanac.json` を取得します（設定でオフにできます）。
 
 - `almanac.json`：ヌシ・オオヌシと未知・伝説・刻限の採集場所、検索用の読み。
 - 毎週 GitHub Actions（`.github/workflows/update.yml`）で元データから作り直し、内容が変わったときだけ更新します。手動で動かすときは Actions タブの「update-almanac」→「Run workflow」。
