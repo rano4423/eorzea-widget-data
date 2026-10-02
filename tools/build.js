@@ -61,11 +61,15 @@ const METHOD = { 0: '採掘', 1: '砕岩', 2: '伐採', 3: '草刈' };
 for (const [nid, n] of Object.entries(nodes)) {
   if (!n.limited) continue;
   const m = maps[n.map]; const zone = m ? places[m.placename_id]?.ja ?? '' : '';
-  const its = n.items.filter(i => items[i]).map(i => items[i].ja).filter(s => !/クリスタル|シャード|クラスター/.test(s));
+  const all = n.items.filter(i => items[i]).map(i => items[i].ja);
+  // crystals are left out of the name, except at points that give nothing else (two Mor Dhona points: クラスター各種)
+  const gems = all.filter(s => !/クリスタル|シャード|クラスター/.test(s));
+  const its = gems.length ? gems : all;
+  const title = gems.length ? gems[0] : all.length > 1 ? all[0].replace(/^.*?(クリスタル|シャード|クラスター)$/, '$1各種') : all[0];
   const kind = n.ephemeral ? 'ephem' : n.folklore ? 'legend' : 'unspoiled';
   const dur = n.duration / 60; // Eorzea minutes -> hours
   out.push({ id: 'n' + nid, kind, exp: Math.min(5, Math.max(0, Math.floor(n.level / 10) - 5)), level: n.level,
-    name: its[0] ?? '?', items: its, zone, spot: '', xy: [n.x, n.y], prev: [], wx: [],
+    name: title ?? '?', items: its, zone, spot: '', xy: [n.x, n.y], prev: [], wx: [],
     et: n.spawns.map(s => [s, (s + dur) % 24]), job: JOB[n.type] ?? '', method: METHOD[n.type] ?? '', folklore: !!n.folklore });
 }
 
