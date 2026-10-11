@@ -33,6 +33,8 @@ const useT = tid => {
 };
 // expansion index: 0 新生 (2.x) ... 5 黄金 (7.x)
 const expOfPatch = p => Math.min(5, Math.max(0, Math.floor(p) - 2));
+// Map coordinates run from 1 to about 42; the source has a few broken ones (Y 47768481 at フォルアード・キャビンズ), left out.
+const mapXY = c => c && c[0] >= 1 && c[0] <= 45 && c[1] >= 1 && c[1] <= 45 ? [+c[0].toFixed(1), +c[1].toFixed(1)] : null;
 const TUG = { light: '!', medium: '!!', heavy: '!!!' }, HOOK = { Precision: 'プレシジョン', Powerful: 'パワフル' };
 const name = id => D.ITEMS[id]?.name_ja ?? items[id]?.ja ?? `#${id}`;
 
@@ -48,7 +50,7 @@ for (const f of Object.values(D.FISH)) {
   const spear = !!f.gig && !f.bigFish;
   out.push({ id: 'f' + f._id, kind: spear ? 'spear' : legendFish[f._id] ? 'oonushi' : 'nushi', method: f.gig ? '刺突漁' : '釣り',
     gigSize: f.gig ? GIG[f.gig] ?? f.gig : '', exp: expOfPatch(f.patch), patch: f.patch,
-    name: name(f._id), terr: +tid, spot: spot.name_ja, xy: spot.map_coords ? [+spot.map_coords[0].toFixed(1), +spot.map_coords[1].toFixed(1)] : null,
+    name: name(f._id), terr: +tid, spot: spot.name_ja, xy: mapXY(spot.map_coords),
     prev: f.previousWeatherSet.map(useW), wx: f.weatherSet.map(useW), et: [[f.startHour, f.endHour]],
     bait: f.bestCatchPath.map(name), pred: f.predators.map(([id, n]) => [name(id), n]), intuition: f.intuitionLength,
     tug: TUG[f.tug] ?? '', hook: HOOK[f.hookset] ?? '', folklore: !!f.folklore, gig: !!f.gig, missing: !!f.dataMissing });
